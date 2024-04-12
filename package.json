@@ -1,0 +1,35 @@
+{
+  "name": "bienesraices_mvc",
+  "version": "1.0.0",
+  "description": "Priyecto de bienes raices con Node.js",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node ./index.js",
+    "server": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Hobbit3415/bienes_raices_nodejs.git"
+  },
+  "keywords": [
+    "MVC",
+    "Pug",
+    "Tailwind",
+    "MySQL",
+    "Sequelize"
+  ],
+  "author": "Emmanuel Mora",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Hobbit3415/bienes_raices_nodejs/issues"
+  },
+  "homepage": "https://github.com/Hobbit3415/bienes_raices_nodejs#readme",
+  "dependencies": {
+    "express": "^4.18.3",
+    "pug": "^3.0.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}
