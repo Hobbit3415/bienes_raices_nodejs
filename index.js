@@ -9,9 +9,15 @@ const app = express()
 app.set('view engine', 'pug')
 app.set('views', './views')
 
+// Carpeta publica
+// Donde buscar el CSS
+app.use(express.static('public'))
+
 // Routing
 app.use("/", userRoutes)
 app.use("/auth", userRoutes)
+
+
 
 // Definir un puerto y arrancar el proyecto
 const port = 3000;
