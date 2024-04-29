@@ -1,9 +1,22 @@
 // Importar express para crear servidor
 import express from 'express'
 import userRoutes from "./routes/userRoutes.js"
+import db from "./config/db.js"
 
 // Crear la app
 const app = express()
+
+// Habilitar lectura de datos de formularios
+app.use(express.urlencoded({extended: true}))
+
+// Conexion a la base de datos
+try{
+    await db.authenticate();
+    db.sync()
+    console.log('Conexion correcta a la db')
+}catch(error){
+    console.log(error)
+}
 
 // Habilitar PUG
 app.set('view engine', 'pug')
