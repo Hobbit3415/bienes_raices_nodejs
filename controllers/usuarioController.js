@@ -1,6 +1,7 @@
 import { check, validationResult } from "express-validator";
 import { generarId } from "../helpers/tokens.js"
-import { emailRegistro } from "../helpers/emails.js"
+import { emailRegistro, emailResetPassword } from "../helpers/emails.js"
+import csurf from "csurf";
 
 import Usuario from "../models/Usuario.js";
 
@@ -10,16 +11,71 @@ const formularioLogin = (req, res) =>{
     })
 }
 
-const formularioRegistro = (req, res) =>{
+const formularioRegistro = (req, res) =>{    
     res.render('auth/registro', {
         pagina: 'Crear Cuenta',
+        csrfToken: req.csrfToken()
     })
 }
 
 const formularioResetPassword = (req, res) =>{
     res.render('auth/reset_password', {
         pagina: 'Reset Password',
+        csrfToken: req.csrfToken(),
     })
+}
+
+const resetPassword = async(req, res) => {
+    // Validacion
+    await check('email').isEmail().withMessage('Eso no parece un email').run(req)
+
+    // Verificar que el resultado esté vacio
+    let resultado = validationResult(req)
+
+    // return res.json(resultado.array())
+
+    if(!resultado.isEmpty()){
+        // Errores
+        return res.render('auth/reset_password', {
+            pagina: 'Reset Password',
+            csrfToken: req.csrfToken(),
+            errores: resultado.array()
+        })
+    }
+
+    // Buscar usuario
+    const {email} = req.body
+
+    const usuario = await Usuario.findOne({where:{email}})
+
+    if(!usuario){
+        // Errores
+        return res.render('auth/reset_password', {
+            pagina: 'Reset Password',
+            csrfToken: req.csrfToken(),
+            errores: [{msg: "El email no pertenece a ningun usuario"}]
+        })
+    }
+
+    // Generar un token y enviar el email
+    usuario.token = generarId()
+    await usuario.save()
+
+    // Enviar email
+    emailResetPassword({
+        email: usuario.email,
+        nombre:usuario.nombre,
+        token: usuario.token
+    })
+
+    // Renderizar mensaje
+    if(usuario){
+        // Errores
+        return res.render('templates/mensaje', {
+            pagina: 'Reestablece tu password',
+            mensaje: "Se ha enviado un correo para reestablecer la contraseña"
+        })
+    }
 }
 
 // Funcion que confirma una cuenta
@@ -72,6 +128,7 @@ const registrar = async(req, res) => {
         // Errores
         return res.render('auth/registro', {
             pagina: 'Crear Cuenta',
+            csrfToken: req.csrfToken(),
             errores: resultado.array(),
             usuario: {
                 nombre: req.body.nombre,
@@ -91,6 +148,7 @@ const registrar = async(req, res) => {
     if(existeUsuario){
         return res.render('auth/registro', {
             pagina: 'Crear Cuenta',
+            csrfToken: req.csrfToken(),
             errores: [{msg: 'El usuario ya está registrado'}],
             usuario: {
                 nombre: req.body.nombre,
@@ -122,10 +180,36 @@ const registrar = async(req, res) => {
     
 }
 
+const comprobarToken =  async(req, res) =>{
+
+    const {token} = req.params;
+
+    const usuario = await Usuario.findOne({where : {token}})
+    if(!usuario){
+        return res.render('auth/confirmar_cuenta', {
+            pagina: 'Reestablece tu password',
+            mensaje: 'Hubo un error al validar tu informacion, intenta nuevamente',
+            error: true
+        })
+    }
+
+    // Mostrar formulario para modificar el password
+    
+    
+
+}
+
+const nuevoPassword = (req, res) =>{
+
+}
+
 export {
     formularioLogin,
     formularioRegistro,
     formularioResetPassword,
     registrar,
-    confirmar
+    confirmar,
+    resetPassword,
+    comprobarToken,
+    nuevoPassword,
 }
