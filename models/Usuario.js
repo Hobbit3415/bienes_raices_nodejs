@@ -31,4 +31,15 @@ const Usuario = db.define('usuarios', {
     }
 })
 
+// Metodos personalizados
+/**
+ * Compara un password en texto plano con uno hasheado
+ * @param {*} password 
+ * @returns bool
+ */
+Usuario.prototype.verificarPassword = function(password){
+    return bcrypt.compareSync(password, this.password)
+}
+
+
 export default Usuario;
