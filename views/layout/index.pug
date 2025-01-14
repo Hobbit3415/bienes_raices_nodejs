@@ -1,14 +1,19 @@
 doctype html
 html(lang="es")
-    head
-        meta(charset="UTF-8")
-        meta(name="viewport", content="width=device-width, initial-scale=1.0")
-        title Bienes raices | #{pagina}
-        link(rel="stylesheet", href="/css/app.css")
-    body.min-h-screen.bg-gray-50
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    title Bienes raices | #{pagina}
+    link(rel="stylesheet" href="/css/app.css")
 
-        if barra
-            include header
+    block styles
 
-        main(class="mx-auto container mt-10 px-2")
-            block contenido
+  body.min-h-screen.bg-gray-50
+
+    if barra
+      include header
+
+    main(class="mx-auto container mt-10 px-2")
+      block contenido
+
+    block scripts
